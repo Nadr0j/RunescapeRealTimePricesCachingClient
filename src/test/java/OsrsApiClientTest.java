@@ -1,3 +1,4 @@
+/* (C)2024 */
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.jws.client.OsrsApiClient;

@@ -1,3 +1,4 @@
+/* (C)2024 */
 package org.jws.activity;
 
 import com.mongodb.client.FindIterable;
@@ -35,7 +36,6 @@ public class GetPricesActivity {
 
         if (shouldCallApi) {
             records.addAll(osrsApiClient.getTimeSeries(getPricesRequest.itemId(), Timestep.TWENTY_FOUR_HOUR));
-            
         } else {
             final Bson queryFilter = getFilter(getPricesRequest);
              records.addAll(queryCollection(queryFilter));

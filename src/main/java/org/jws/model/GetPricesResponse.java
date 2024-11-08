@@ -1,3 +1,4 @@
+/* (C)2024 */
 package org.jws.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

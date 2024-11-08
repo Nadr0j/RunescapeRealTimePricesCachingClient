@@ -1,3 +1,4 @@
+/* (C)2024 */
 package org.jws.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
