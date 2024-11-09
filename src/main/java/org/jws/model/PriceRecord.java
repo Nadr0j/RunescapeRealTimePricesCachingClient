@@ -2,12 +2,14 @@
 package org.jws.model;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.immutables.value.Value;
 
 import java.math.BigDecimal;
 
 @Value.Immutable
 public abstract class PriceRecord {
+    public abstract ObjectId id();
     @BsonProperty(PriceRecordFields.ITEM_ID)
     public abstract int itemId();
     @BsonProperty(PriceRecordFields.TIMESTAMP)
