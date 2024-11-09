@@ -14,6 +14,7 @@ import dagger.Module;
 import dagger.Provides;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.jws.model.ModifiablePriceRecord;
 import org.jws.model.PriceRecord;
 import org.jws.model.PriceRecordFields;
 
@@ -61,18 +62,24 @@ public class ServiceModules {
     @Singleton
     public CodecRegistry provideCodecRegistry() {
         return fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                fromProviders(PojoCodecProvider.builder()
+                        .register("org.jws.model")
+                        .register(ModifiablePriceRecord.class)
+                        .automatic(true)
+                        .build()));
     }
 
     @Provides
     @Named(MONGO_CONNECTION_URI)
     public String provideMongoConnectionUri() {
-        return System.getenv(MONGODB_URI_ENV_VAR);
+//        return System.getenv(MONGODB_URI_ENV_VAR);
+        return "mongodb://10.0.0.102:27017";
     }
 
     @Provides
     @Named(OSRS_CLIENT_USER_AGENT_ENV_VAR)
     public String provideOsrsClientUserAgent() {
-        return System.getenv(OSRS_CLIENT_USER_AGENT_ENV_VAR);
+//        return System.getenv(OSRS_CLIENT_USER_AGENT_ENV_VAR);
+        return "Exadre@ - testing";
     }
 }

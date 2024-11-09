@@ -4,7 +4,7 @@ package org.jws.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jws.model.ImmutablePriceRecord;
+import org.jws.model.ModifiablePriceRecord;
 import org.jws.model.PriceRecord;
 import org.jws.model.Timestep;
 
@@ -68,14 +68,13 @@ public class OsrsApiClient {
         final List<PriceRecord> prices = new ArrayList<>();
 
         for (JsonNode node : dataArray) {
-            final PriceRecord record = ImmutablePriceRecord.builder()
-                    .itemId(2)
-                    .timestamp(node.get("timestamp").asInt())
-                    .avgHighPrice(node.get("avgHighPrice").floatValue())
-                    .avgLowPrice(node.get("avgLowPrice").floatValue())
-                    .highPriceVolume(node.get("highPriceVolume").floatValue())
-                    .lowPriceVolume(node.get("lowPriceVolume").floatValue())
-                    .build();
+            final PriceRecord record = new PriceRecord();
+            record.setItemId(2);
+            record.setTimestamp(node.get("timestamp").asInt());
+            record.setAvgHighPrice(node.get("avgHighPrice").floatValue());
+            record.setAvgLowPrice(node.get("avgLowPrice").floatValue());
+            record.setHighPriceVolume(node.get("highPriceVolume").floatValue());
+            record.setLowPriceVolume(node.get("lowPriceVolume").floatValue());
             prices.add(record);
         }
 

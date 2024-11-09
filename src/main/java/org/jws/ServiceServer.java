@@ -59,7 +59,7 @@ public class ServiceServer {
                 sendError(httpExchange, HttpURLConnection.HTTP_NOT_FOUND, "Request must be POST");
             }
         } catch (final Exception e) {
-            log.error("Failed with exception {}", e.toString());
+            log.error("Failed with exception", e);
             sendError(httpExchange, HttpURLConnection.HTTP_INTERNAL_ERROR, "Encountered error. " +
                     "Please try your request again.");
         } finally {
@@ -80,7 +80,7 @@ public class ServiceServer {
             responseBody.write(responseBytes);
             responseBody.close();
         } catch (Exception e) {
-            log.error("Failed to send response. {}", e.toString());
+            log.error("Failed to send response.", e);
         }
     }
 
