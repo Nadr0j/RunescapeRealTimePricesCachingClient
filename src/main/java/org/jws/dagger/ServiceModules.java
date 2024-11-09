@@ -34,8 +34,9 @@ public class ServiceModules {
 
     @Provides
     @Singleton
-    public MongoCollection<PriceRecord> provideTwentyfourHourCollection(final MongoClient mongoClient) {
-        final MongoDatabase database = mongoClient.getDatabase(MONGO_DATABASE_NAME);
+    public MongoCollection<PriceRecord> provideTwentyfourHourCollection(
+            final MongoClient mongoClient, final CodecRegistry registry) {
+        final MongoDatabase database = mongoClient.getDatabase(MONGO_DATABASE_NAME).withCodecRegistry(registry);
         final MongoCollection<PriceRecord> collection = database.getCollection(
                 TWENTY_FOUR_HOURS_TIMESERIES_COLLECTION, PriceRecord.class);
 
@@ -52,19 +53,15 @@ public class ServiceModules {
 
     @Provides
     @Singleton
-    public MongoClient provideMongoClient(final MongoClientSettings clientSettings) {
-        return MongoClients.create(clientSettings);
+    public MongoClient provideMongoClient(@Named(MONGO_CONNECTION_URI) final String connectionUri) {
+        return MongoClients.create(connectionUri);
     }
 
     @Provides
     @Singleton
-    public MongoClientSettings provideMongoClientSettings(@Named(MONGO_CONNECTION_URI) final String connectionUri) {
-        final CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+    public CodecRegistry provideCodecRegistry() {
+        return fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        return MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(connectionUri))
-                .codecRegistry(codecRegistry)
-                .build();
     }
 
     @Provides

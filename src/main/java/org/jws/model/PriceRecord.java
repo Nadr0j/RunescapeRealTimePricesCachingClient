@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 
 @Value.Immutable
 public abstract class PriceRecord {
-    public abstract ObjectId id();
     @BsonProperty(PriceRecordFields.ITEM_ID)
     public abstract int itemId();
     @BsonProperty(PriceRecordFields.TIMESTAMP)

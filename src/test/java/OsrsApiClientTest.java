@@ -9,8 +9,7 @@ import java.io.IOException;
 public class OsrsApiClientTest {
     @Test
     public void test() throws IOException {
-        final OsrsApiClient client = new OsrsApiClient("@Exadre - testing", new ObjectMapper());
-        System.out.println(client.getTimeSeries(2, Timestep.TWENTY_FOUR_HOUR));
-
+//        final OsrsApiClient client = new OsrsApiClient("@Exadre - testing", new ObjectMapper());
+//        System.out.println(client.getTimeSeries(2, Timestep.TWENTY_FOUR_HOUR));
     }
 }
