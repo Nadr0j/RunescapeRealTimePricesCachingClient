@@ -10,6 +10,6 @@ import java.util.Optional;
 @JsonDeserialize(as = ImmutableGetPricesRequest.class)
 public abstract class GetPricesRequest {
     public abstract int itemId();
-    public abstract Optional<Integer> startTime();
-    public abstract Optional<Integer> endTime();
+    public abstract Integer startTime();
+    public abstract Integer endTime();
 }

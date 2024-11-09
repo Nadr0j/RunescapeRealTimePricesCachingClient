@@ -15,13 +15,13 @@ public final class RequestValidator {
 
     public static void validateGetPricesRequest(final GetPricesRequest request) {
         try {
-            assertValidEpoch(request.startTime().orElse(null));
+            assertValidEpoch(request.startTime());
         } catch (final Exception e) {
             throw new ValidationException(INVALID_START_TIMESTAMP);
         }
 
         try {
-            assertValidEpoch(request.endTime().orElse(null));
+            assertValidEpoch(request.endTime());
         } catch (final Exception e) {
             throw new ValidationException(INVALID_END_TIMESTAMP);
         }

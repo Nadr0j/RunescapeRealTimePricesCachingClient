@@ -20,10 +20,8 @@ public class DataStoreRouter {
     }
 
     public boolean shouldCallApi(final GetPricesRequest request) {
-        final boolean startTimeInDb = request.startTime().isEmpty()
-                || request.startTime().get() >= getEarliestRecord(request.itemId()).timestamp();
-        final boolean endTimeInDb = request.endTime().isEmpty()
-                || request.endTime().get() <= getLatestRecord(request.itemId()).timestamp();
+        final boolean startTimeInDb = request.startTime()>= getEarliestRecord(request.itemId()).timestamp();
+        final boolean endTimeInDb = request.endTime() <= getLatestRecord(request.itemId()).timestamp();
         return !(startTimeInDb && endTimeInDb);
     }
 

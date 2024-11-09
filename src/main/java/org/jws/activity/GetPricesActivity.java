@@ -55,15 +55,10 @@ public class GetPricesActivity {
 
     private Bson getFilter(final GetPricesRequest request) {
         final List<Bson> filters = new ArrayList<>();
+
         filters.add(eq(PriceRecordFields.ITEM_ID, request.itemId()));
-
-        if (request.startTime().isPresent()) {
-            filters.add(gte(PriceRecordFields.TIMESTAMP, request.startTime()));
-        }
-
-        if (request.endTime().isPresent()) {
-            filters.add(lte(PriceRecordFields.TIMESTAMP, request.endTime()));
-        }
+        filters.add(gte(PriceRecordFields.TIMESTAMP, request.startTime()));
+        filters.add(lte(PriceRecordFields.TIMESTAMP, request.endTime()));
 
         return and(filters);
     }
