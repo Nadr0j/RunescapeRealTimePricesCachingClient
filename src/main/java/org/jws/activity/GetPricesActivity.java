@@ -37,19 +37,23 @@ public class GetPricesActivity {
     public GetPricesResponse get(final GetPricesRequest getPricesRequest) throws IOException {
         log.info("Starting activity");
         final List<PriceRecord> records = new ArrayList<>();
+
         log.info("Checking if should call api");
         final boolean shouldCallApi = router.shouldCallApi(getPricesRequest);
         log.info("Should call API is [{}]", shouldCallApi);
+
         if (shouldCallApi) {
-            records.addAll(osrsApiClient.getTimeSeries(getPricesRequest.itemId(), Timestep.TWENTY_FOUR_HOUR));
-            log.info("API called");
-            updateAllRecords(records);
-            log.info("Records written to db");
-        } else {
-            final Bson queryFilter = getFilter(getPricesRequest);
-            records.addAll(queryCollection(queryFilter));
-            log.info("Collection queries");
+            final List<PriceRecord> recordsFromApiCall = osrsApiClient
+                    .getTimeSeries(getPricesRequest.itemId(), Timestep.TWENTY_FOUR_HOUR);
+            log.info("API called and returned [{}] records", recordsFromApiCall.size());
+            updateAllRecords(recordsFromApiCall);
+            log.info("All Records written to db");
         }
+
+        final Bson queryFilter = getFilter(getPricesRequest);
+        log.info("Querying collection with query filter [{}]", queryFilter);
+        records.addAll(queryCollection(queryFilter));
+        log.info("Collection queried and returned [{}] records", records.size());
 
         return ImmutableGetPricesResponse.builder()
                 .prices(records)
@@ -64,12 +68,16 @@ public class GetPricesActivity {
                     eq(PriceRecordFields.ITEM_ID, priceRecord.getItemId()),
                     eq(PriceRecordFields.TIMESTAMP, priceRecord.getTimestamp())
             );
+
+            log.info(filter);
+
             final Bson updateValues = Updates.combine(
-                    Updates.inc(PriceRecordFields.AVG_HIGH_PRICE, priceRecord.getAvgHighPrice()),
-                    Updates.inc(PriceRecordFields.AVG_LOW_PRICE, priceRecord.getAvgLowPrice()),
-                    Updates.inc(PriceRecordFields.HIGH_PRICE_VOLUME, priceRecord.getHighPriceVolume()),
-                    Updates.inc(PriceRecordFields.LOW_PRICE_VOLUME, priceRecord.getLowPriceVolume())
+                    Updates.set(PriceRecordFields.AVG_HIGH_PRICE, priceRecord.getAvgHighPrice()),
+                    Updates.set(PriceRecordFields.AVG_LOW_PRICE, priceRecord.getAvgLowPrice()),
+                    Updates.set(PriceRecordFields.HIGH_PRICE_VOLUME, priceRecord.getHighPriceVolume()),
+                    Updates.set(PriceRecordFields.LOW_PRICE_VOLUME, priceRecord.getLowPriceVolume())
             );
+
             collection.updateOne(filter, updateValues, options);
         }
     }

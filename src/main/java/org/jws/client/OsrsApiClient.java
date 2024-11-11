@@ -37,7 +37,7 @@ public class OsrsApiClient {
     public List<PriceRecord> getTimeSeries(final int itemId, final Timestep timestep) throws IOException {
         String url = BASE_URL + "/timeseries?id=" + itemId + "&timestep=" + timestep.getValue();
         final String responseString = sendGetRequest(url);
-        return parseTimeSeriesResponse(responseString);
+        return parseTimeSeriesResponse(itemId, responseString);
     }
 
     private String sendGetRequest(final String urlString) throws IOException {
@@ -63,13 +63,13 @@ public class OsrsApiClient {
         }
     }
 
-    private List<PriceRecord> parseTimeSeriesResponse(final String stringResponse) throws JsonProcessingException {
+    private List<PriceRecord> parseTimeSeriesResponse(final int itemId, final String stringResponse) throws JsonProcessingException {
         final JsonNode dataArray = objectMapper.readTree(stringResponse).get("data");
         final List<PriceRecord> prices = new ArrayList<>();
 
         for (JsonNode node : dataArray) {
             final PriceRecord record = new PriceRecord();
-            record.setItemId(2);
+            record.setItemId(itemId);
             record.setTimestamp(node.get("timestamp").asInt());
             record.setAvgHighPrice(node.get("avgHighPrice").floatValue());
             record.setAvgLowPrice(node.get("avgLowPrice").floatValue());
