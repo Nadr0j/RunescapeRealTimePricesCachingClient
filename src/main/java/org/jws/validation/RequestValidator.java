@@ -6,6 +6,7 @@ import org.jws.exception.ValidationException;
 import org.jws.model.GetPricesRequest;
 
 import java.time.Instant;
+import java.util.Date;
 
 import static org.jws.exception.Messages.*;
 
@@ -30,8 +31,14 @@ public final class RequestValidator {
     }
 
     private static void assertValidEpoch(final Integer timestamp) {
-        if (timestamp != null) {
-            Instant.ofEpochMilli(timestamp);
+        final int currentTimestamp = (int) (System.currentTimeMillis() / 1_000);
+
+        if (timestamp > currentTimestamp) {
+            throw new ValidationException(INVALID_END_TIMESTAMP);
+        }
+
+        if (timestamp < 0) {
+            throw new ValidationException(INVALID_END_TIMESTAMP);
         }
     }
 

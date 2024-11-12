@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.ThreadContext;
+import org.jws.activity.GetBatchPricesActivity;
 import org.jws.activity.GetPricesActivity;
 import org.jws.model.*;
 import org.jws.model.Error;
@@ -25,26 +26,30 @@ import java.util.concurrent.Executors;
 public class ServiceServer {
     private final ObjectMapper objectMapper;
     private final GetPricesActivity getPricesActivity;
+    private final GetBatchPricesActivity getBatchPricesActivity;
 
     private static final int PORT = 10_100;
     private static final int BACKLOG = 2;
 
     @Inject
-    public ServiceServer(final GetPricesActivity getPricesActivity, final ObjectMapper objectMapper) {
+    public ServiceServer(final GetPricesActivity getPricesActivity, final GetBatchPricesActivity getBatchPricesActivity,
+                         final ObjectMapper objectMapper) {
         this.getPricesActivity = getPricesActivity;
+        this.getBatchPricesActivity = getBatchPricesActivity;
         this.objectMapper = objectMapper;
     }
 
     public void start() throws IOException {
         log.info("Starting server");
         final HttpServer server = HttpServer.create(new InetSocketAddress(PORT), BACKLOG);
-        server.createContext("/some/api", this::handleSomeApi);
+        server.createContext("/some/api", this::handleGetPricesActivity);
+        server.createContext("/getBatchPrices", this::handleGetBatchPricesActivity);
         server.setExecutor(Executors.newFixedThreadPool(10));
         server.start();
         log.info("Pages server has started");
     }
 
-    private void handleSomeApi(final HttpExchange httpExchange) {
+    private void handleGetPricesActivity(final HttpExchange httpExchange) {
         try {
             setRequestIdInThreadContext();
             if ("POST".equals(httpExchange.getRequestMethod())) {
@@ -55,7 +60,30 @@ public class ServiceServer {
                 sendResponse(httpExchange, HttpURLConnection.HTTP_OK, response);
                 log.info("Finished activity with success.");
             } else {
-                log.info("WritePage request sent but is not POST. Returning 404.");
+                log.info("GetPrices request sent but is not POST. Returning 404.");
+                sendError(httpExchange, HttpURLConnection.HTTP_NOT_FOUND, "Request must be POST");
+            }
+        } catch (final Exception e) {
+            log.error("Failed with exception", e);
+            sendError(httpExchange, HttpURLConnection.HTTP_INTERNAL_ERROR, "Encountered error. " +
+                    "Please try your request again.");
+        } finally {
+            clearRequestId();
+        }
+    }
+
+    private void handleGetBatchPricesActivity(final HttpExchange httpExchange) {
+        try {
+            setRequestIdInThreadContext();
+            if ("POST".equals(httpExchange.getRequestMethod())) {
+                final InputStream inputStream = httpExchange.getRequestBody();
+                final GetBatchPricesRequest request = objectMapper.readValue(inputStream, GetBatchPricesRequest.class);
+                log.info("Received request with request object [{}]", request);
+                final GetBatchPricesResponse response = getBatchPricesActivity.get(request);
+                sendResponse(httpExchange, HttpURLConnection.HTTP_OK, response);
+                log.info("Finished activity with success");
+            } else {
+                log.info("GetBatchPrices request sent but is not POST. Rturning 404.");
                 sendError(httpExchange, HttpURLConnection.HTTP_NOT_FOUND, "Request must be POST");
             }
         } catch (final Exception e) {

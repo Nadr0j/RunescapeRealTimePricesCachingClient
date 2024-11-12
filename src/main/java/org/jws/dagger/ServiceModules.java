@@ -2,7 +2,6 @@
 package org.jws.dagger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -14,9 +13,12 @@ import dagger.Module;
 import dagger.Provides;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.jws.activity.GetBatchPricesActivity;
+import org.jws.activity.GetPricesActivity;
 import org.jws.model.ModifiablePriceRecord;
 import org.jws.model.PriceRecord;
 import org.jws.model.PriceRecordFields;
+import org.jws.util.PriceRecordUtils;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -50,6 +52,21 @@ public class ServiceModules {
         );
 
         return collection;
+    }
+
+    @Provides
+    @Singleton
+    public GetBatchPricesActivity provideGetBatchPricesActivity(
+            final GetPricesActivity getPricesActivity,
+            final PriceRecordUtils priceRecordUtils
+            ) {
+        return new GetBatchPricesActivity(getPricesActivity, priceRecordUtils);
+    }
+
+    @Provides
+    @Singleton
+    public PriceRecordUtils providePriceRecordUtils() {
+        return new PriceRecordUtils();
     }
 
     @Provides

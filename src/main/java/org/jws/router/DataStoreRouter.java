@@ -6,7 +6,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import lombok.extern.log4j.Log4j2;
 import org.jws.model.GetPricesRequest;
-import org.jws.model.ModifiablePriceRecord;
 import org.jws.model.PriceRecord;
 import org.jws.model.PriceRecordFields;
 
